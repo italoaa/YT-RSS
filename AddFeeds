@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+echo "Paste the link for the Youtube Channel"
+read Clink
+
+Id=$(echo "$Clink" | awk -F / '{ print $5 }')
+
+echo "What is the name ( No spaces )"
+read Name
+
+echo "https://www.youtube.com/feeds/videos.xml?channel_id=$Id|$Name" >> feeds

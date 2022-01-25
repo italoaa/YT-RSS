@@ -1,0 +1,53 @@
+#!/bin/bash
+touch links
+#DEF
+
+PullDir="./Pulls/"
+if [ -d "$PullDir" ]; then
+   echo "Pulling to $PullDir"
+else
+    echo "$PullDir : Not found create directory or change PullDir"
+    exit
+fi
+
+feeds=$(cat feeds)
+for feed in $feeds
+do
+    # Channel Url
+    Churl=$(echo $feed | awk -F "|" '{ print $1 }')
+    # Name of the Channel
+    CName=$(echo $feed | awk -F "|" '{ print $2 }')
+    # Take the link of the last 3 vids and put it in tmp
+    touch tmp
+    rsstail -1 -Nn 3 -l -u "$Churl" | sed '1d;3d;5d' >> tmp
+    # Apply the name of the channel to the end of each line and append to links
+    sed -e 's/$/|'$CName'/' tmp >> links
+    # Delete tmp for next channel
+    rm tmp
+done
+
+if ! command -v aria2c &> /dev/null
+then
+    echo "aria2c could not be found"
+    exit
+fi
+aria_path=$(which aria2c)
+
+if ! command -v yt-dlp &> /dev/null
+then
+    echo "yt-dlp could not be found"
+    exit
+fi
+
+# I know there is a batch file option for yt-dlp but there where a bit of problems
+links=$(cat links)
+for line in $links
+do
+    link=$(echo $line | awk -F "|" '{ print $1 }')
+    name=$(echo $line | awk -F "|" '{ print $2 }')
+    linkPullDir=$(echo "$PullDir$name")
+    mkdir -p $linkPullDir
+    yt-dlp -P "$linkPullDir" --downloader "$aria_path" -f 140+299 "$link"
+done
+
+rm links

@@ -1,0 +1,19 @@
+#+TITLE: Readme
+
+* YT-RSS
+This is a tool that downloads the latest 3 youtube videos from a channel and stores them in a organized way.
+
+** Using the tool
+1. First try adding new subscriptions to your feeds file. The only requirement is the =channel link= the script parses it to RSS form
+#+begin_src shell
+           ./AddFeeds
+#+end_src
+
+2. Then set the pull directory to your needs in the script.
+#+begin_src shell
+            PullDir="./Pulls/"
+#+end_src
+3. Run the script.
+#+begin_src shell
+            ./Puller
+#+end_src
